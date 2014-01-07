@@ -626,7 +626,7 @@ services:
         class: %ezpublish_rest.output.value_object_visitor.cached_value.class%
         parent: ezpublish_rest.output.value_object_visitor.base
         arguments:
-            - { content.view_cache: true, content.ttl_cache: true, content.default_ttl: 60 }
+            - @ezpublish.config.resolver
         calls:
             - [setRequest, [@request=]]
         tags:

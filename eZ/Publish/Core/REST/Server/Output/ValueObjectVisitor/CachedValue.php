@@ -9,6 +9,7 @@
 
 namespace eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor;
 
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\REST\Common\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Common\Output\Generator;
 use eZ\Publish\Core\REST\Common\Output\Visitor;
@@ -19,13 +20,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CachedValue extends ValueObjectVisitor
 {
-    protected $options = array();
+    /** @var ConfigResolverInterface */
+    protected $configResolver;
 
     protected $request;
 
-    public function __construct( array $options = array() )
+    public function __construct( ConfigResolverInterface $configResolver )
     {
-        $this->options = $options;
+        $this->configResolver = $configResolver;
     }
 
     public function setRequest( Request $request = null )
@@ -42,7 +44,7 @@ class CachedValue extends ValueObjectVisitor
     {
         $visitor->visitValueObject( $data->value );
 
-        if ( $this->options['content.view_cache'] !== true )
+        if ( $this->getParameter( 'content.view_cache' ) !== true )
         {
             return;
         }
@@ -51,13 +53,21 @@ class CachedValue extends ValueObjectVisitor
         $response->setPublic();
         $response->setVary( 'Accept' );
 
-        if ( $this->options['content.ttl_cache'] === true )
+        if ( $this->getParameter( 'content.ttl_cache' ) === true )
         {
-            $response->setSharedMaxAge( $data->ttl ? : $this->options['content.default_ttl'] );
+            $response->setSharedMaxAge( $data->ttl ? : $this->getParameter( 'content.default_ttl' ) );
             if ( isset( $this->request ) && $this->request->headers->has( 'X-User-Hash' ) )
             {
                 $response->setVary( 'X-User-Hash', false );
             }
         }
+    }
+
+    public function getParameter( $parameterName, $defaultValue = null )
+    {
+        if ( $this->configResolver->hasParameter( $parameterName ) )
+            return $this->configResolver->getParameter( $parameterName );
+
+        return $defaultValue;
     }
 }
