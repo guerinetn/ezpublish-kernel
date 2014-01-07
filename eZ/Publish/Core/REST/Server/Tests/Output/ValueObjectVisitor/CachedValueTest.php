@@ -9,11 +9,13 @@
 
 namespace eZ\Publish\Core\REST\Server\Tests\Output\ValueObjectVisitor;
 
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\REST\Common\Tests\Output\ValueObjectVisitorBaseTest;
 use eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Server\Exceptions;
 use eZ\Publish\Core\REST\Common;
 use eZ\Publish\Core\REST\Server\Values\CachedValue;
+use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -146,9 +148,43 @@ class CachedValueTest extends ValueObjectVisitorBaseTest
     protected function internalGetVisitor()
     {
         $visitor = new ValueObjectVisitor\CachedValue(
-            $this->options ?: $this->defaultOptions
+            $this->getConfigProviderMock()
         );
         $visitor->setRequest( $this->request );
         return $visitor;
+    }
+
+    /**
+     * @return ConfigResolverInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getConfigProviderMock()
+    {
+        $options = $this->options ?: $this->defaultOptions;
+
+        $mock = $this->getMock( 'eZ\Publish\Core\MVC\ConfigResolverInterface' );
+        $mock
+            ->expects( $this->any() )
+            ->method( 'hasParameter' )
+            ->will(
+                $this->returnCallback(
+                    function ( $parameterName ) use ( $options )
+                    {
+                        return isset( $options[$parameterName] );
+                    }
+                )
+            );
+        $mock
+            ->expects( $this->any() )
+            ->method( 'getParameter' )
+            ->will(
+                $this->returnCallback(
+                    function ( $parameterName, $defaultValue ) use ( $options )
+                    {
+                        return isset( $options[$parameterName] ) ? $options[$parameterName] : $defaultValue;
+                    }
+                )
+            );
+
+        return $mock;
     }
 }
