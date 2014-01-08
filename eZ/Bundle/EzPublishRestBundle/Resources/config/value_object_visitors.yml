@@ -634,11 +634,7 @@ services:
 
     ezpublish_rest.output.value_object_visitor.location_cached_value:
         class: %ezpublish_rest.output.value_object_visitor.location_cached_value.class%
-        parent: ezpublish_rest.output.value_object_visitor.base
-        arguments:
-            - { content.view_cache: true, content.ttl_cache: true, content.default_ttl: 60 }
-        calls:
-            - [setRequest, [@request=]]
+        parent: ezpublish_rest.output.value_object_visitor.cached_value
         tags:
             - { name: ezpublish_rest.output.value_object_visitor, type: eZ\Publish\Core\REST\Server\Values\LocationCachedValue }
 
