@@ -3,6 +3,8 @@ parameters:
     ezpublish_rest.routing.options_loader.route_collection_mapper.class: eZ\Bundle\EzPublishRestBundle\Routing\OptionsLoader\RouteCollectionMapper
     ezpublish_rest.routing.options_loader.mapper.class: eZ\Bundle\EzPublishRestBundle\Routing\OptionsLoader\Mapper
 
+    ezpublish_rest.cors_options_provider.class: eZ\Bundle\EzPublishRestBundle\CorsOptions\RestProvider
+
     ezpublish_rest.controller.base.class: eZ\Publish\Core\REST\Server\Controller
     ezpublish_rest.controller.binary_content.class: eZ\Publish\Core\REST\Server\Controller\BinaryContent
     ezpublish_rest.controller.content.class: eZ\Publish\Core\REST\Server\Controller\Content
@@ -63,11 +65,14 @@ parameters:
     ezpublish_rest.input.handler.json.class: eZ\Publish\Core\REST\Common\Input\Handler\Json
     ezpublish_rest.input.handler.xml.class: eZ\Publish\Core\REST\Common\Input\Handler\Xml
 
+    ezpublish_rest.templated_router.class: %router.class%
+
 services:
     ezpublish_rest.routing.options_loader:
         class: %ezpublish_rest.routing.options_loader.class%
         arguments:
             - @ezpublish_rest.routing.options_loader.route_collection_mapper
+            - @ezpublish_rest.templated_router
         tags:
             - { name: routing.loader }
 
@@ -78,6 +83,12 @@ services:
 
     ezpublish_rest.routing.options_loader.mapper:
         class: %ezpublish_rest.routing.options_loader.mapper.class%
+
+    ezpublish_rest.cors_option_provider:
+        class: %ezpublish_rest.cors_options_provider.class%
+        arguments: [@router.default]
+        tags:
+            - { name: nelmio_cors.options_provider }
 
     ezpublish_rest.field_type_serializer:
         class: %ezpublish_rest.field_type_serializer.class%
@@ -202,7 +213,7 @@ services:
         arguments:
             - %ezpublish_rest.path_prefix%
         tags:
-            - { name: kernel.event_subscriber, priority: 10 }
+            - { name: kernel.event_subscriber }
 
     ezpublish_rest.response_listener:
         class: %ezpublish_rest.response_listener.class%
@@ -358,3 +369,9 @@ services:
         class: %ezpublish_rest.input.handler.xml.class%
         tags:
             - { name: ezpublish_rest.input.handler, format: xml }
+
+    ezpublish_rest.templated_router:
+        class: %ezpublish_rest.templated_router.class%
+        parent: hautelook.router.template
+        calls:
+            - [ setOption, [ strict_requirements, ~ ] ]
