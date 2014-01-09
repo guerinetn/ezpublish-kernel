@@ -55,11 +55,16 @@ class CachedValue extends ValueObjectVisitor
 
         if ( $this->getParameter( 'content.ttl_cache' ) === true )
         {
-            $response->setSharedMaxAge( $data->ttl ? : $this->getParameter( 'content.default_ttl' ) );
+            $response->setSharedMaxAge( $this->getParameter( 'content.default_ttl' ) );
             if ( isset( $this->request ) && $this->request->headers->has( 'X-User-Hash' ) )
             {
                 $response->setVary( 'X-User-Hash', false );
             }
+        }
+
+        if ( isset( $data->cacheTags['locationId'] ) )
+        {
+            $visitor->getResponse()->headers->set( 'X-Location-Id', $data->cacheTags['locationId'] );
         }
     }
 

@@ -98,9 +98,9 @@ class Content extends RestController
             return $restContent;
         }
 
-        return new Values\LocationCachedValue(
-            $contentInfo->mainLocationId,
-            $restContent
+        return new Values\CachedValue(
+            $restContent,
+            array( 'locationId' => $contentInfo->mainLocationId )
         );
     }
 
@@ -218,9 +218,9 @@ class Content extends RestController
             return $versionValue;
         }
 
-        return new Values\LocationCachedValue(
-            $content->contentInfo->mainLocationId,
-            $versionValue
+        return new Values\CachedValue(
+            $versionValue,
+            array( 'locationId' => $content->contentInfo->mainLocationId )
         );
     }
 
@@ -349,9 +349,9 @@ class Content extends RestController
             return $versionList;
         }
 
-        return new Values\LocationCachedValue(
-            $contentInfo->mainLocationId,
-            $versionList
+        return new Values\CachedValue(
+            $versionList,
+            array( 'locationId' => $contentInfo->mainLocationId )
         );
     }
 
@@ -607,9 +607,9 @@ class Content extends RestController
             return $relationListValue;
         }
 
-        return new Values\LocationCachedValue(
-            $contentInfo->mainLocationId,
-            $relationListValue
+        return new Values\CachedValue(
+            $relationListValue,
+            array( 'locationId' => $contentInfo->mainLocationId )
         );
     }
 
@@ -642,9 +642,9 @@ class Content extends RestController
                     return $relation;
                 }
 
-                return new Values\LocationCachedValue(
-                    $contentInfo->mainLocationId,
-                    new Values\LocationList( $relation, $this->request->getPathInfo() )
+                return new Values\CachedValue(
+                    new Values\LocationList( $relation, $this->request->getPathInfo() ),
+                    array( 'locationId' => $contentInfo->mainLocationId )
                 );
             }
         }

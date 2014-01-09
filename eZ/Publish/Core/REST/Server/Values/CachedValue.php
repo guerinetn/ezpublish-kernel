@@ -8,16 +8,11 @@
  */
 namespace eZ\Publish\Core\REST\Server\Values;
 
+use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use eZ\Publish\Core\REST\Common\Value as RestValue;
 
 class CachedValue extends RestValue
 {
-    /**
-     * Cache TTL. Set to false to disable.
-     * @var int|bool
-     */
-    public $ttl;
-
     /**
      * Actual value object
      * @var mixed
@@ -25,14 +20,33 @@ class CachedValue extends RestValue
     public $value;
 
     /**
-     * Vary cache user hash
-     * @var string
+     * Associative array of cache tags.
+     * Example: array( 'locationId' => 59 )
+     * @var mixed[]
      */
-    public $userHash;
+    public $cacheTags;
 
-    public function __construct( $value, $ttl = null )
+    /**
+     * @param mixed $value The value that gets cached
+     * @param array $cacheTags Tags to add to the cache (supported: locationId)
+     * @throw InvalidArgumentException If invalid cache tags are provided
+     */
+    public function __construct( $value, array $cacheTags = array() )
     {
         $this->value = $value;
-        $this->ttl = $ttl;
+        $this->cacheTags = $this->checkCacheTags( $cacheTags );
+    }
+
+    protected function checkCacheTags( $tags )
+    {
+        $invalidTags = array_diff( array_keys( $tags ), array( 'locationId' ) );
+        if ( count( $invalidTags ) > 0 )
+        {
+            throw new InvalidArgumentException(
+                'cacheTags',
+                "Unknown cache tag(s): " . implode( ', ', $invalidTags  )
+            );
+        }
+        return $tags;
     }
 }

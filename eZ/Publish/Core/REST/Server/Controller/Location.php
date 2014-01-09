@@ -134,19 +134,19 @@ class Location extends RestController
      *
      * @return \eZ\Publish\Core\REST\Server\Values\RestLocation
      */
-    public function loadLocation( $locationPath, Request $request )
+    public function loadLocation( $locationPath )
     {
         $locationId = $this->extractLocationIdFromPath( $locationPath );
         $location = $this->locationService->loadLocation(
             $locationId
         );
 
-        return new Values\LocationCachedValue(
-            $locationId,
+        return new Values\CachedValue(
             new Values\RestLocation(
                 $location,
                 $this->locationService->getLocationChildCount( $location )
-            )
+            ),
+            array( 'locationId' => $locationId )
         );
     }
 
@@ -335,9 +335,9 @@ class Location extends RestController
             );
         }
 
-        return new Values\LocationCachedValue(
-            $contentInfo->mainLocationId,
-            new Values\LocationList( $restLocations, $this->request->getPathInfo() )
+        return new Values\CachedValue(
+            new Values\LocationList( $restLocations, $this->request->getPathInfo() ),
+            array( 'locationId' => $contentInfo->mainLocationId )
         );
     }
 
@@ -372,9 +372,9 @@ class Location extends RestController
             );
         }
 
-        return new Values\LocationCachedValue(
-            $locationId,
-            new Values\LocationList( $restLocations, $this->request->getPathInfo() )
+        return new Values\CachedValue(
+            new Values\LocationList( $restLocations, $this->request->getPathInfo() ),
+            array( 'locationId' => $locationId )
         );
     }
 

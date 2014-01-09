@@ -53,6 +53,19 @@ class CachedValueTest extends ValueObjectVisitorBaseTest
         self::assertNotNull( $result );
     }
 
+    public function testVisitLocationCache()
+    {
+        $responseMock = $this->getResponseMock();
+        $responseMock->expects( $this->once() )->method( 'setPublic' );
+        $responseMock->expects( $this->at( 1 ) )->method( 'setVary' )->with( 'Accept' );
+        $responseMock->expects( $this->once() )->method( 'setSharedMaxAge' )->with( $this->defaultOptions['content.default_ttl'] );
+        $responseMock->expects( $this->at( 3 ) )->method( 'setVary' )->with( 'X-User-Hash', false );
+
+        $result = $this->visit( new CachedValue( new stdClass, array( 'locationId' => 'testLocationId' ) ) );
+
+        self::assertNotNull( $result );
+    }
+
     public function testVisitNoUserHash()
     {
         $this->request->headers->remove( 'X-User-Hash' );
@@ -78,19 +91,6 @@ class CachedValueTest extends ValueObjectVisitorBaseTest
         $responseMock->expects( $this->once() )->method( 'setSharedMaxAge' )->with( $this->defaultOptions['content.default_ttl'] );
 
         $result = $this->visit( new CachedValue( new stdClass ) );
-
-        self::assertNotNull( $result );
-    }
-
-    public function testVisitCustomTTL()
-    {
-        $responseMock = $this->getResponseMock();
-        $responseMock->expects( $this->once() )->method( 'setPublic' );
-        $responseMock->expects( $this->at( 1 ) )->method( 'setVary' )->with( 'Accept' );
-        $responseMock->expects( $this->once() )->method( 'setSharedMaxAge' )->with( 30 );
-        $responseMock->expects( $this->at( 3 ) )->method( 'setVary' )->with( 'X-User-Hash', false );
-
-        $result = $this->visit( new CachedValue( new stdClass, 30 ) );
 
         self::assertNotNull( $result );
     }
