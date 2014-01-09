@@ -21,7 +21,6 @@ use eZ\Publish\API\Repository\TrashService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use eZ\Publish\Core\REST\Server\Exceptions\BadRequestException;
 use eZ\Publish\Core\REST\Server\Exceptions\ForbiddenException;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Location controller
@@ -130,7 +129,6 @@ class Location extends RestController
      * Loads a location
      *
      * @param string $locationPath
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\RestLocation
      */
@@ -318,11 +316,10 @@ class Location extends RestController
      * Loads all locations for content object
      *
      * @param mixed $contentId
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\LocationList
      */
-    public function loadLocationsForContent( $contentId, Request $request )
+    public function loadLocationsForContent( $contentId )
     {
         $restLocations = array();
         $contentInfo = $this->contentService->loadContentInfo( $contentId );
@@ -345,11 +342,10 @@ class Location extends RestController
      * Loads child locations of a location
      *
      * @param string $locationPath
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\LocationList
      */
-    public function loadLocationChildren( $locationPath, Request $request )
+    public function loadLocationChildren( $locationPath )
     {
         $offset = $this->request->query->has( 'offset' ) ? (int)$this->request->query->get( 'offset' ) : 0;
         $limit = $this->request->query->has( 'limit' ) ? (int)$this->request->query->get( 'limit' ) : -1;

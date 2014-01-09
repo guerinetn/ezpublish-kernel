@@ -21,7 +21,6 @@ use eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException;
 use eZ\Publish\API\Repository\Exceptions\ContentValidationException;
 use eZ\Publish\Core\REST\Server\Exceptions\ForbiddenException;
 use eZ\Publish\Core\REST\Server\Exceptions\BadRequestException;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Content controller
@@ -64,7 +63,7 @@ class Content extends RestController
      *
      * @return \eZ\Publish\Core\REST\Server\Values\RestContent
      */
-    public function loadContent( $contentId, Request $request )
+    public function loadContent( $contentId )
     {
         $contentInfo = $this->repository->getContentService()->loadContentInfo( $contentId );
         $mainLocation = $this->repository->getLocationService()->loadLocation( $contentInfo->mainLocationId );
@@ -185,11 +184,10 @@ class Content extends RestController
      *
      * @param mixed $contentId
      * @param int $versionNumber
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\Version
      */
-    public function loadContentInVersion( $contentId, $versionNumber, Request $request )
+    public function loadContentInVersion( $contentId, $versionNumber )
     {
         $languages = null;
         if ( $this->request->query->has( 'languages' ) )
@@ -331,11 +329,10 @@ class Content extends RestController
      * include fields and relations in the Version elements of the response.
      *
      * @param mixed $contentId
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\VersionList
      */
-    public function loadContentVersions( $contentId, Request $request )
+    public function loadContentVersions( $contentId )
     {
         $contentInfo = $this->repository->getContentService()->loadContentInfo( $contentId );
 
@@ -575,11 +572,10 @@ class Content extends RestController
      *
      * @param mixed $contentId
      * @param mixed $versionNumber
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \eZ\Publish\Core\REST\Server\Values\RelationList
      */
-    public function loadVersionRelations( $contentId, $versionNumber, Request $request )
+    public function loadVersionRelations( $contentId, $versionNumber )
     {
         $offset = $this->request->query->has( 'offset' ) ? (int)$this->request->query->get( 'offset' ) : 0;
         $limit = $this->request->query->has( 'limit' ) ? (int)$this->request->query->get( 'limit' ) : -1;
@@ -619,12 +615,11 @@ class Content extends RestController
      * @param mixed $contentId
      * @param int $versionNumber
      * @param mixed $relationId
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @throws \eZ\Publish\Core\REST\Common\Exceptions\NotFoundException
      * @return \eZ\Publish\Core\REST\Server\Values\RestRelation
      */
-    public function loadVersionRelation( $contentId, $versionNumber, $relationId, Request $request )
+    public function loadVersionRelation( $contentId, $versionNumber, $relationId )
     {
         $contentInfo = $this->repository->getContentService()->loadContentInfo( $contentId );
         $relationList = $this->repository->getContentService()->loadRelations(
