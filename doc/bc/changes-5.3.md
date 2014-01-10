@@ -20,6 +20,12 @@ Changes affecting version compatibility with former or future versions.
 * `is_logged_in` cookie is not sent or used any more by Symfony stack (it is still used by legacy though).
   Anonymous state is now checked by the presence of a session cookie (prefixed by `eZSESSID`).
 
+* New search criterion `eZ\Publish\API\Repository\Values\Content\Query\Criterion\MapLocationDistance`
+  is introduced.
+
+* New search sort clause `eZ\Publish\API\Repository\Values\Content\Query\SortClause\MapLocationDistance`
+  is introduced.
+
 ## Deprecations
 
 * Method `eZ\Publish\API\Repository\RoleService::removePolicy` is deprecated in
